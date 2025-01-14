@@ -1,0 +1,12 @@
+[versions]
+kotlin = "2.1.0"
+shadow = "9.0.0-beta4"
+
+[libraries]
+kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+
+[bundles]
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
