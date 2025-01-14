@@ -10,17 +10,15 @@ plugins {
 val baseVersion = "0.0.1"
 val commitHash = System.getenv("COMMIT_HASH")?.takeUnless { it.isBlank() }
 val isMainBranch = System.getenv("GITHUB_REF") == "refs/heads/main"
-val version = when {
+val calculatedVersion = when {
     isMainBranch -> baseVersion
     commitHash != null -> "$baseVersion-dev.$commitHash"
     else -> "$baseVersion-SNAPSHOT"
 }
 
-System.setProperty("VERSION", version)
-
 allprojects {
     group = "app.simplecloud.plugin"
-    version = version
+    version = calculatedVersion
 
     repositories {
         mavenCentral()
@@ -76,6 +74,12 @@ subprojects {
                 "name" to project.name
             )
         }
+    }
+}
+
+tasks.register("printVersion") {
+    doLast {
+        println(project.version)
     }
 }
 

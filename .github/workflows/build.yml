@@ -1,6 +1,7 @@
 name: Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "dev" ]
   pull_request:
@@ -38,6 +39,9 @@ jobs:
 
       - name: Add COMMIT_HASH environment variable
         run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Extract Version
+        run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: ./gradlew build
