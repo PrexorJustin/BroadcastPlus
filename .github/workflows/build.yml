@@ -43,7 +43,7 @@ jobs:
       - name: Extract Version
         run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
-      - name: Build with Gradle (Including Shadow JAR)
+      - name: Build ShadowJars
         run: ./gradlew clean build shadowJar
 
       - name: Test with Gradle
@@ -59,7 +59,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}  # Use 'name' instead of 'release_name'
           generate_release_notes: true
           draft: false
           prerelease: false
