@@ -66,7 +66,6 @@ subprojects {
         named("shadowJar", ShadowJar::class) {
             mergeServiceFiles()
             archiveFileName.set("${project.name}.jar")
-            archiveVersion.set("")
         }
 
         processResources {

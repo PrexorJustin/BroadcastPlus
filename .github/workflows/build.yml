@@ -43,21 +43,14 @@ jobs:
       - name: Extract Version
         run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build with Gradle (Including Shadow JAR)
+        run: ./gradlew clean build shadowJar
 
       - name: Test with Gradle
         run: ./gradlew test
 
-      - name: Upload Dev Build Artifacts
-        if: github.ref == 'refs/heads/dev' || contains(github.ref, 'refs/pull')
-        uses: actions/upload-artifact@v4
-        with:
-          name: Dev-Build-${{ github.sha }}
-          path: |
-            **/build/libs/*.jar
-            !**/build/libs/*-plain.jar
-          retention-days: 14
+      - name: List build/libs directory
+        run: ls -l build/libs  # Ensure the shadow JAR exists
 
       - name: Create Release
         if: github.ref == 'refs/heads/main'
@@ -65,11 +58,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: |
-            **/build/libs/*.jar
-            !**/build/libs/*-plain.jar
-          name: Release ${{ env.VERSION }}
           tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
           generate_release_notes: true
           draft: false
           prerelease: false
+
+      - name: Upload Shadow JAR to Release
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Find the shadow JAR file (without version number in the name)
+          for jar in $(find . -type f -name "*-all.jar" -path "*/build/libs/*"); do
+            echo "Uploading $jar"
+            gh release upload v${{ env.VERSION }} "$jar"
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
